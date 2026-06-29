@@ -4,7 +4,7 @@ export default function CameraView({onCapture}) {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [isFlash, setIsFlash] = useState(false);
-    const [isFlashMode, setIsFlashMode] = useState(flase);
+    const [isFlashMode, setIsFlashMode] = useState(false);
 
     useEffect(() => {
         navigator.mediaDevices.getUserMedia({
@@ -44,36 +44,36 @@ export default function CameraView({onCapture}) {
     };
 
     return (
-    <section class="bg-white rounded-card p-4 border border-surface-container-highest stitch-shadow space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-outline">Ống kính thực tế</h2>
+    <section className="bg-white rounded-card p-4 border border-surface-container-highest stitch-shadow space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-outline">Ống kính thực tế</h2>
         <button 
           onClick={() => setIsFlashMode(!isFlashMode)} 
           class={`p-2 rounded-full transition-colors ${isFlashMode ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container text-on-surface-variant'}`}
         >
-          <span class="material-symbols-outlined text-sm">{isFlashMode ? 'flash_on' : 'flash_off'}</span>
+          <span className="material-symbols-outlined text-sm">{isFlashMode ? 'flash_on' : 'flash_off'}</span>
         </button>
       </div>
       
-      <div class="relative aspect-[4/3] bg-neutral-900 rounded-xl overflow-hidden flex items-center justify-center">
-        <video ref={videoRef} autoPlay playsInline class="w-full h-full object-cover scale-x-[-1]"></video>
-        <canvas ref={canvasRef} class="hidden"></canvas>
+      <div className="relative aspect-[4/3] bg-neutral-900 rounded-xl overflow-hidden flex items-center justify-center">
+        <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover scale-x-[-1]"></video>
+        <canvas ref={canvasRef} className="hidden"></canvas>
         
-        {isFlash && <div class="absolute inset-0 bg-white transition-opacity duration-75 z-50"></div>}
+        {isFlash && <div className="absolute inset-0 bg-white transition-opacity duration-75 z-50"></div>}
         
-        <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20">
-          <div class="border-b border-r border-white"></div>
-          <div class="border-b border-r border-white"></div>
-          <div class="border-b border-white"></div>
-          <div class="border-b border-r border-white"></div>
-          <div class="border-b border-r border-white"></div>
-          <div class="border-b border-white"></div>
+        <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20">
+          <div className="border-b border-r border-white"></div>
+          <div className="border-b border-r border-white"></div>
+          <div className="border-b border-white"></div>
+          <div className="border-b border-r border-white"></div>
+          <div className="border-b border-r border-white"></div>
+          <div className="border-b border-white"></div>
         </div>
       </div>
 
-      <div class="flex justify-center pt-2">
-        <button onClick={triggerCapture} class="w-16 h-16 rounded-full bg-white border-4 border-primary p-1 flex items-center justify-center active:scale-90 transition-transform">
-          <div class="w-full h-full bg-primary-container rounded-full"></div>
+      <div className="flex justify-center pt-2">
+        <button onClick={triggerCapture} className="w-16 h-16 rounded-full bg-white border-4 border-primary p-1 flex items-center justify-center active:scale-90 transition-transform">
+          <div className="w-full h-full bg-primary-container rounded-full"></div>
         </button>
       </div>
     </section>

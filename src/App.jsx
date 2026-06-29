@@ -41,20 +41,20 @@ export default function App() {
   };
 
   return (
-    <div class="flex flex-col min-h-screen pb-24">
+    <div className="flex flex-col min-h-screen pb-24">
       {/* TOP HEADER */}
-      <header class="p-4 pt-8 flex items-center justify-between bg-surface/80 backdrop-blur-md sticky top-0 z-40">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg stitch-shadow">J</div>
-          <h1 class="text-xl font-extrabold tracking-tight">Journey</h1>
+      <header className="p-4 pt-8 flex items-center justify-between bg-surface/80 backdrop-blur-md sticky top-0 z-40">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg stitch-shadow">J</div>
+          <h1 className="text-xl font-extrabold tracking-tight">Journey</h1>
         </div>
-        <button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full">
-          <span class="material-symbols-outlined">account_circle</span>
+        <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full">
+          <span className="material-symbols-outlined">account_circle</span>
         </button>
       </header>
 
       {/* CORE PAGES */}
-      <main class="flex-1 px-4 max-w-md mx-auto w-full mt-2">
+      <main className="flex-1 px-4 max-w-md mx-auto w-full mt-2">
         {currentTab === 'camera' && <CameraView onCapture={handleCaptureImage} />}
         {currentTab === 'timeline' && <Timeline items={timelineItems} />}
       </main>
