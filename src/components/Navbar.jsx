@@ -2,28 +2,36 @@ import React from 'react';
 
 export default function Navbar({ currentTab, onTabChange }) {
   const tabs = [
-    { id: 'collection', icon: 'folder' },
+    { id: 'collection', icon: 'stack' },
     { id: 'camera', icon: 'photo_camera' },
-    { id: 'timeline', icon: 'auto_stories' }
+    { id: 'timeline', icon: 'timeline' } 
   ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-xl border-t border-surface-container-highest max-w-md mx-auto flex justify-around items-center z-40 pt-2 shadow-[0_-4px_24px_rgba(45,55,50,0.04)] pb-[env(safe-area-inset-bottom,16px)] h-[calc(56px+env(safe-area-inset-bottom,16px))]">
-      {tabs.map(tab => {
-        const isActive = currentTab === tab.id;
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            className={`p-3 rounded-full transition-all duration-300 relative ${isActive ? 'text-primary scale-110' : 'text-outline opacity-40'}`}
-          >
-            <span className="material-symbols-outlined text-[26px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
-              {tab.icon}
-            </span>
-            {isActive && <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></div>}
-          </button>
-        );
-      })}
-    </nav>
+    <div className="fixed bottom-0 inset-x-0 z-40 max-w-2xs mx-auto px-4 pointer-events-none pb-[calc(env(safe-area-inset-bottom,16px)+12px)]">
+      <nav className="w-full bg-white/80 backdrop-blur-xl border border-surface-container-highest rounded-full flex justify-around items-center shadow-[0_8px_32px_rgba(45,55,50,0.08)] pointer-events-auto h-15">
+        {tabs.map(tab => {
+          const isActive = currentTab === tab.id;
+          return (
+            <button 
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`flex items-center justify-center h-12 transition-all duration-300 relative ${
+                isActive
+                  ? 'bg-white rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.06)] px-6 text-primary scale-105'
+                  : 'text-outline opacity-40 px-4'
+              }`}
+            >
+              <span 
+                className="material-symbols-outlined text-[24px]"
+                style={{ fontVariationSettings: isActive ? "'FILL' 1, 'wght' 500" : "'FILL' 0, 'wght' 400" }}
+              >
+                {tab.icon}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+    </div>
   );
 }

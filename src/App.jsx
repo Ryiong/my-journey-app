@@ -45,7 +45,7 @@ export default function App() {
   };
 
   return (
-    <div className="fixed inset-0 bg-surface flex flex-col h-screen max-h-[100dvh] overflow-hidden select-none pb-[calc(64px+env(safe-area-inset-bottom,16px))]">
+    <div className="fixed inset-0 bg-surface flex flex-col pt-4 h-screen max-h-[100dvh] overflow-hidden select-none pb-[calc(64px+env(safe-area-inset-bottom,16px))] pt-[calc(env(safe-area-inset-top,16px)+12px)]">
 
       <header className="p-4 pt-[calc(env(safe-area-inset-top)+8px)] flex items-center justify-between bg-surface/80 backdrop-blur-md z-30 shrink-0">
         <div className="flex items-center gap-2">

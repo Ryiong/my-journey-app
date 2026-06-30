@@ -54,34 +54,34 @@ export default function CameraView({ onCapture }) {
     }
   };
 
-  if (!hasCamPermission) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-4">
-        <span className="material-symbols-outlined text-4xl text-red-400">no_photography</span>
-        <h2 className="text-base font-bold">Yêu cầu kết nối bảo mật HTTPS</h2>
-      </div>
-    );
-  }
+  // if (!hasCamPermission) {
+  //   return (
+  //     <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-4">
+  //       <span className="material-symbols-outlined text-4xl text-red-400">no_photography</span>
+  //       <h2 className="text-base font-bold">Yêu cầu kết nối bảo mật HTTPS</h2>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="h-full flex flex-col justify-between py-2">
-      <div className="flex items-center justify-between px-2">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-outline">
+      <div className="flex items-center justify-end px-2">
+        {/* <h2 className="text-xs font-bold uppercase tracking-widest text-outline">
           {previewImage ? "Kiểm tra góc chụp" : "Ống kính"}
-        </h2>
+        </h2> */}
         {!previewImage && (
           <div className="flex gap-2">
-            <button onClick={() => setFacingMode(p => p === 'environment' ? 'user' : 'environment')} className="p-2 rounded-full bg-surface-container text-on-surface-variant">
-              <span className="material-symbols-outlined text-sm">flip_camera_ios</span>
+            <button onClick={() => setFacingMode(p => p === 'environment' ? 'user' : 'environment')} className="flex item-center justify-center p-2 rounded-full bg-surface-container text-on-surface-variant">
+              <span className="material-symbols-outlined text-sm">flip_camera_android</span>
             </button>
-            <button onClick={() => setIsFlashMode(!isFlashMode)} className={`p-2 rounded-full ${isFlashMode ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container'}`}>
+            <button onClick={() => setIsFlashMode(!isFlashMode)} className={`flex item-center justify-center p-2 rounded-full ${isFlashMode ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container'}`}>
               <span className="material-symbols-outlined text-sm">{isFlashMode ? 'flash_on' : 'flash_off'}</span>
             </button>
           </div>
         )}
       </div>
 
-      <div className="relative aspect-[3/4] w-full bg-neutral-900 rounded-card overflow-hidden stitch-shadow">
+      <div className="relative aspect-[3/4] w-5/6 mr-auto ml-auto mt-6 mb-6 bg-neutral-900 rounded-card overflow-hidden stitch-shadow">
         {previewImage ? (
           <img src={previewImage} className="w-full h-full object-cover" alt="Preview" />
         ) : (
@@ -91,7 +91,7 @@ export default function CameraView({ onCapture }) {
         {isFlash && <div className="absolute inset-0 bg-white z-50"></div>}
       </div>
 
-      <div className="flex justify-center items-center pt-2">
+      <div className="flex justify-center items-center pt-2 grow">
         {previewImage ? (
           <div className="flex gap-4 w-full px-2">
             <button onClick={() => setPreviewImage(null)} className="flex-1 py-3 text-xs font-bold bg-surface-container rounded-xl text-on-surface-variant flex items-center justify-center gap-1">
@@ -102,7 +102,7 @@ export default function CameraView({ onCapture }) {
             </button>
           </div>
         ) : (
-          <button onClick={triggerCapture} className="w-14 h-14 rounded-full bg-white border-4 border-primary p-0.5 active:scale-95 transition-transform">
+          <button onClick={triggerCapture} className="w-20 h-20 rounded-full bg-white border-4 border-primary p-0.5 active:scale-95 transition-transform">
             <div className="w-full h-full bg-primary-container rounded-full"></div>
           </button>
         )}
