@@ -8,7 +8,7 @@ export default function Navbar({ currentTab, onTabChange }) {
   ];
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 max-w-2xs mx-auto px-4 pointer-events-none pb-[calc(env(safe-area-inset-bottom,16px)+12px)]">
+    <div className="fixed bottom-0 inset-x-0 z-40 max-w-2xs mx-auto px-4 pointer-events-none ">
       <nav className="w-full bg-white/80 backdrop-blur-xl border border-surface-container-highest rounded-full flex justify-around items-center shadow-[0_8px_32px_rgba(45,55,50,0.08)] pointer-events-auto h-15">
         {tabs.map(tab => {
           const isActive = currentTab === tab.id;

@@ -9,29 +9,48 @@ export default function CameraView({ onCapture }) {
   const [hasCamPermission, setHasCamPermission] = useState(true);
   const [previewImage, setPreviewImage] = useState(null);
 
-  useEffect(() => {
+  const stopCameraStream = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  const startCameraStream = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setHasCamPermission(false);
       return;
     }
 
     navigator.mediaDevices.getUserMedia({
-      video: { facingMode: facingMode },
+      video: { 
+        facingMode: facingMode,
+        width: { ideal: 1280 },
+        height: { ideal: 960 }
+      },
       audio: false
     })
     .then(stream => {
-      if (videoRef.current) videoRef.current.srcObject = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
       const track = stream.getVideoTracks()[0];
       if (track && track.getCapabilities?.().torch) {
         track.applyConstraints({ advanced: [{ torch: isFlashMode }] }).catch(() => {});
       }
     })
-    .catch(() => setHasCamPermission(false));
+    .catch((err) => {
+      console.error("Error starting camera:", err);
+      setHasCamPermission(false);
+    });
+  };
+
+  useEffect(() => {
+    startCameraStream();
 
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-      }
+      stopCameraStream();
     };
   }, [facingMode, isFlashMode]);
 
@@ -50,8 +69,17 @@ export default function CameraView({ onCapture }) {
         ctx.scale(-1, 1);
       }
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      setPreviewImage(canvas.toDataURL('image/jpeg'));
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      stopCameraStream();
+      setPreviewImage(dataUrl);
     }
+  };
+
+  const handleRetake = () => {
+    setPreviewImage(null);
+    setTimeout(() => {
+      startCameraStream();
+    }, 50);
   };
 
   // if (!hasCamPermission) {
@@ -66,15 +94,18 @@ export default function CameraView({ onCapture }) {
   return (
     <div className="h-full flex flex-col justify-between py-2">
       <div className="flex items-center justify-end px-2">
-        {/* <h2 className="text-xs font-bold uppercase tracking-widest text-outline">
-          {previewImage ? "Kiểm tra góc chụp" : "Ống kính"}
-        </h2> */}
         {!previewImage && (
           <div className="flex gap-2">
-            <button onClick={() => setFacingMode(p => p === 'environment' ? 'user' : 'environment')} className="flex item-center justify-center p-2 rounded-full bg-surface-container text-on-surface-variant">
+            <button 
+              onClick={() => setFacingMode(p => p === 'environment' ? 'user' : 'environment')} 
+              className="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center active:scale-90 transition-transform"
+            >
               <span className="material-symbols-outlined text-sm">flip_camera_android</span>
             </button>
-            <button onClick={() => setIsFlashMode(!isFlashMode)} className={`flex item-center justify-center p-2 rounded-full ${isFlashMode ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container'}`}>
+            <button 
+              onClick={() => setIsFlashMode(!isFlashMode)} 
+              className={`w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-transform ${isFlashMode ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container'}`}
+            >
               <span className="material-symbols-outlined text-sm">{isFlashMode ? 'flash_on' : 'flash_off'}</span>
             </button>
           </div>
@@ -94,7 +125,7 @@ export default function CameraView({ onCapture }) {
       <div className="flex justify-center items-center pt-2 grow">
         {previewImage ? (
           <div className="flex gap-4 w-full px-2">
-            <button onClick={() => setPreviewImage(null)} className="flex-1 py-3 text-xs font-bold bg-surface-container rounded-xl text-on-surface-variant flex items-center justify-center gap-1">
+            <button onClick={handleRetake} className="flex-1 py-3 text-xs font-bold bg-surface-container rounded-xl text-on-surface-variant flex items-center justify-center gap-1">
               <span className="material-symbols-outlined text-sm">refresh</span> Chụp lại
             </button>
             <button onClick={() => onCapture(previewImage)} className="flex-1 py-3 text-xs font-bold bg-primary text-white rounded-xl flex items-center justify-center gap-1">
