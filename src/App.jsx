@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import CameraView from './components/CameraView';
+import EditorView from './components/EditorView';
 import Timeline from './components/Timeline';
-import BottomSheet from './components/BottomSheet';
+import CollectionView from './components/CollectionView';
 import Navbar from './components/Navbar';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('camera');
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [tempImage, setTempImage] = useState(null);
+  const [editorImage, setEditorImage] = useState(null); // Kiểm soát việc chuyển sang màn hình Editor
+  const [collections, setCollections] = useState(['Minimalist Living', 'Mountain Retreat', 'Coffee Study']);
   const [timelineItems, setTimelineItems] = useState([
     {
       id: 1,
@@ -18,9 +19,12 @@ export default function App() {
     }
   ]);
 
-  const handleCaptureImage = (dataUrl) => {
-    setTempImage(dataUrl);
-    setIsSheetOpen(true);
+  const handleAddCollection = (name) => {
+    if (!collections.includes(name)) setCollections([...collections, name]);
+  };
+
+  const handleCaptured = (dataUrl) => {
+    setEditorImage(dataUrl); // Nhận ảnh và kích hoạt màn Editor chuyên sâu
   };
 
   const handleSaveMoment = ({ caption, collection }) => {
@@ -30,44 +34,56 @@ export default function App() {
     const newItem = {
       id: Date.now(),
       time: timeString,
-      img: tempImage,
+      img: editorImage,
       caption,
       collection
     };
 
     setTimelineItems([newItem, ...timelineItems]);
-    setIsSheetOpen(false);
-    setCurrentTab('timeline'); // Lưu xong tự chuyển sang Tab Timeline để xem
+    setEditorImage(null);
+    setCurrentTab('timeline'); // Điều hướng thẳng đến dòng thời gian để review
   };
 
   return (
-    <div className="flex flex-col min-h-screen pb-24">
-      {/* TOP HEADER */}
-      <header className="p-4 pt-8 flex items-center justify-between bg-surface/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg stitch-shadow">J</div>
-          <h1 className="text-xl font-extrabold tracking-tight">Journey</h1>
+    <div className="fixed inset-0 bg-surface flex flex-col h-screen max-h-[100dvh] overflow-hidden select-none pb-[calc(64px+env(safe-area-inset-bottom,16px))]">
+
+      <header className="p-4 pt-[calc(env(safe-area-inset-top)+8px)] flex items-center justify-between bg-surface/80 backdrop-blur-md z-30 shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm stitch-shadow">J</div>
+          <h1 className="text-lg font-black tracking-tight">Journey</h1>
         </div>
-        <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full">
-          <span className="material-symbols-outlined">account_circle</span>
-        </button>
+        <span className="material-symbols-outlined text-outline text-xl">account_circle</span>
       </header>
 
-      {/* CORE PAGES */}
-      <main className="flex-1 px-4 max-w-md mx-auto w-full mt-2">
-        {currentTab === 'camera' && <CameraView onCapture={handleCaptureImage} />}
-        {currentTab === 'timeline' && <Timeline items={timelineItems} />}
+      <main className="flex-1 px-4 overflow-hidden relative">
+        {editorImage ? (
+          <EditorView 
+            image={editorImage} 
+            collections={collections} 
+            onAddCollection={handleAddCollection}
+            onSave={handleSaveMoment}
+            onCancel={() => setEditorImage(null)}
+          />
+        ) : (
+          <>
+            {currentTab === 'camera' && <CameraView onCapture={handleCaptured} />}
+            {currentTab === 'timeline' && (
+              <div className="h-full overflow-y-auto no-scrollbar pb-6">
+                <Timeline items={timelineItems} />
+              </div>
+            )}
+            {currentTab === 'collection' && (
+              <CollectionView 
+                collections={collections} 
+                onAddCollection={handleAddCollection} 
+                timelineItems={timelineItems}
+              />
+            )}
+          </>
+        )}
       </main>
 
-      {/* COMPONENT TRƯỢT SỐ LƯU NỘI DUNG */}
-      <BottomSheet 
-        isOpen={isSheetOpen} 
-        onClose={() => setIsSheetOpen(false)} 
-        onSave={handleSaveMoment} 
-      />
-
-      {/* NAVIGATION BAR */}
-      <Navbar currentTab={currentTab} onTabChange={setCurrentTab} />
+      {!editorImage && <Navbar currentTab={currentTab} onTabChange={setCurrentTab} />}
     </div>
   );
 }
