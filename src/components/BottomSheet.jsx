@@ -38,7 +38,7 @@ export default function BottomSheet({ isOpen, onClose, onSave }) {
                 <button 
                   key={col} 
                   onClick={() => setSelectedCol(col)} 
-                  class={`px-3 py-1.5 text-xs font-bold rounded-full shrink-0 transition-colors ${selectedCol === col ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant'}`}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-full shrink-0 transition-colors ${selectedCol === col ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant'}`}
                 >
                   {col}
                 </button>

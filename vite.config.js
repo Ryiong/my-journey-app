@@ -8,4 +8,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    host: '0.0.0.0', // Lắng nghe trên mọi cổng mạng kết nối
+    port: 5173,
+    allowedHosts: ['.ngrok-free.app', 'localhost', '127.0.0.1']
+  }
 })
