@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function EditorView({ image, collections, onAddCollection, onSave, onCancel }) {
+export default function EditorView({ image, collections, onAddCollection, onSave, onCancel, isSaving }) {
   const [caption, setCaption] = useState('');
   const [selectedCol, setSelectedCol] = useState(collections[0] || 'Chưa phân loại');
   const [isCreating, setIsCreating] = useState(false);
@@ -74,9 +74,10 @@ export default function EditorView({ image, collections, onAddCollection, onSave
 
       <button
         onClick={() => onSave({ caption, collection: selectedCol })}
+        disabled={isSaving}
         className="w-full py-3.5 bg-primary text-white rounded-xl font-bold text-xs tracking-wider active:opacity-90 transition-opacity"
       >
-        ĐĂNG LÊN TIMELINE
+        {isSaving ? 'ĐANG TẢI LÊN...' : 'ĐĂNG LÊN TIMELINE'}
       </button>
     </div>
   );
