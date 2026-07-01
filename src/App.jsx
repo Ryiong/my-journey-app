@@ -6,6 +6,7 @@ import Timeline from './components/Timeline';
 import CollectionView from './components/CollectionView';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
+import logoSvg from './assets/icon.svg';
 import { useEffect } from 'react';
 
 const base64ToBlob = (base64Data, contentType = 'image/jpeg') => {
@@ -65,7 +66,7 @@ export default function App() {
         const dbCollections = data
           .map(item => item.collection || 'Chưa phân loại')
           .filter(name => name && name.trim() !== '');
-        
+
         setCollections(Array.from(new Set(dbCollections)));
       }
     };
@@ -94,7 +95,7 @@ export default function App() {
       const blob = base64ToBlob(editorImage);
 
       const { error: storageError } = await supabase.storage
-        .from('journey-photos') 
+        .from('journey-photos')
         .upload(fileName, blob, { contentType: 'image/jpeg', cacheControl: '3600' });
 
       if (storageError) throw storageError;
@@ -141,8 +142,14 @@ export default function App() {
     <div className="fixed inset-0 bg-surface flex flex-col h-screen max-h-[100dvh] overflow-hidden select-none pb-[calc(64px+env(safe-area-inset-bottom,16px))]">
       <header className="p-4 pt-[calc(env(safe-area-inset-top,16px)+8px)] flex items-center justify-between bg-surface/80 backdrop-blur-md z-30 shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm stitch-shadow">J</div>
-          <h1 className="text-lg font-black tracking-tight">Journey</h1>
+          <img
+            src={logoSvg}
+            alt="Journey Logo"
+            className="w-8 h-8 object-contain active:scale-95 transition-transform"
+          />
+          <h1 className="text-lg font-black tracking-tight bg-gradient-to-r from-primary to-cyan-500 bg-clip-text text-transparent">
+            My Journey
+          </h1>
         </div>
         <button onClick={handleLogout} className="material-symbols-outlined text-outline text-xl active:scale-90 transition-transform">
           logout
