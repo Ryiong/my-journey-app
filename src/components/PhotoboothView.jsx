@@ -8,12 +8,6 @@ const FRAMES_CONFIG = {
     height: 1200,
     defaultBg: '#34908B',
     slots: [{ x: 80, y: 80, w: 1640, h: 940 }],
-    drawFooter: (ctx) => {
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 40px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Special Moment • My Journey', 900, 1140);
-    }
   },
   4: {
     id: 'strip-4',
@@ -22,17 +16,11 @@ const FRAMES_CONFIG = {
     height: 1800,
     defaultBg: '#34908B',
     slots: [
-      { x: 60, y: 40, w: 480, h: 340 },
-      { x: 60, y: 420, w: 480, h: 340 },
-      { x: 60, y: 800, w: 480, h: 340 },
-      { x: 60, y: 1180, w: 480, h: 340 }
-    ],
-    drawFooter: (ctx) => {
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 35px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('MY JOURNEY STRIP', 300, 1650);
-    }
+      { x: 40, y: 128, w: 520, h: 340 },
+      { x: 40, y: 508, w: 520, h: 340 },
+      { x: 40, y: 888, w: 520, h: 340 },
+      { x: 40, y: 1268, w: 520, h: 340 }
+    ]
   },
   6: {
     id: 'grid-6',
@@ -41,16 +29,10 @@ const FRAMES_CONFIG = {
     height: 1800,
     defaultBg: '#34908B',
     slots: [
-      { x: 70, y: 80, w: 500, h: 375 }, { x: 630, y: 80, w: 500, h: 375 },
-      { x: 70, y: 505, w: 500, h: 375 }, { x: 630, y: 505, w: 500, h: 375 },
-      { x: 70, y: 930, w: 500, h: 375 }, { x: 630, y: 930, w: 500, h: 375 }
-    ],
-    drawFooter: (ctx) => {
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 50px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('MEMORIES PHOTOBOOTH', 600, 1600);
-    }
+      { x: 30, y: 300, w: 560, h: 420 }, { x: 610, y: 300, w: 560, h: 420 },
+      { x: 30, y: 780, w: 560, h: 420 }, { x: 610, y: 780, w: 560, h: 420 },
+      { x: 30, y: 1260, w: 560, h: 420 }, { x: 610, y: 1260, w: 560, h: 420 }
+    ]
   }
 };
 
