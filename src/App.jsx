@@ -6,6 +6,7 @@ import Timeline from './components/Timeline';
 import CollectionView from './components/CollectionView';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
+import PhotoboothView from './components/PhotoboothView';
 import logoSvg from './assets/icon.svg';
 import { useEffect } from 'react';
 
@@ -86,13 +87,14 @@ export default function App() {
     }
   };
 
-  const handleSaveMoment = async ({ caption, collection }) => {
-    if (!editorImage || isSaving) return;
+  const handleSaveMoment = async ({ caption, collection, imageBase64 }) => {
+    const targetImage = imageBase64 || editorImage
+    if (!targetImage || isSaving) return;
     setIsSaving(true);
 
     try {
       const fileName = `${user.id}/${Date.now()}.jpg`;
-      const blob = base64ToBlob(editorImage);
+      const blob = base64ToBlob(targetImage);
 
       const { error: storageError } = await supabase.storage
         .from('journey-photos')
@@ -169,6 +171,9 @@ export default function App() {
         ) : (
           <>
             {currentTab === 'camera' && <CameraView onCapture={(url) => setEditorImage(url)} />}
+            {currentTab === 'photobooth' && (
+              <PhotoboothView onSave={handleSaveMoment} isSaving={isSaving} />
+            )}
             {currentTab === 'timeline' && (
               <div className="h-full overflow-y-auto no-scrollbar pb-6">
                 <Timeline items={timelineItems} />

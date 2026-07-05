@@ -4,6 +4,7 @@ export default function Navbar({ currentTab, onTabChange }) {
   const tabs = [
     { id: 'collection', icon: 'stack' },
     { id: 'camera', icon: 'photo_camera' },
+    { id: 'photobooth', icon: 'photo_prints'},
     { id: 'timeline', icon: 'timeline' } 
   ];
 
