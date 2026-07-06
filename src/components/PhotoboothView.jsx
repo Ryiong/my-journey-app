@@ -1,6 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const FRAMES_CONFIG = {
+const rawFrames = import.meta.glob('../assets/frames/*.png', { eager: true });
+const getBuiltInFrame = () => {
+  const frameKeys = {1: [], 4: [], 6: []};
+  Object.entries(rawFrames).forEach(([filePath, module]) => {
+    const fileName = filePath.split('/').pop();
+    const cleanName = fileName.replace('.png', '');
+    const [styleFrame, qtyStr] = cleanName.split('_');
+    const qty = parseInt(qtyStr);
+
+    if (frameKeys[qty]) {
+      const displayName = qty ? qtyStr.replace('pic', '') : 'Khung có sẵn';
+      frameKeys[qty].push({
+        id: cleanName,
+        name: `Khung ${styleFrame} (${displayName}) ảnh`,
+        src: module.default
+      })
+    }
+  })
+  return frameKeys;
+}
+
+const BUILTIN_FRAMES = getBuiltInFrame();
+
+const FRAMES_LAYOUT_CONFIG = {
   1: {
     id: 'single-1',
     name: 'Khổ ngang 1 ảnh (4x6")',
@@ -8,6 +31,13 @@ const FRAMES_CONFIG = {
     height: 1200,
     defaultBg: '#34908B',
     slots: [{ x: 80, y: 80, w: 1640, h: 940 }],
+    slots: [{ x: 80, y: 80, w: 1640, h: 940 }],
+    drawFooter: (ctx) => {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 40px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Special Moment • My Journey', 900, 1140);
+    }
   },
   4: {
     id: 'strip-4',
@@ -20,7 +50,13 @@ const FRAMES_CONFIG = {
       { x: 40, y: 508, w: 520, h: 340 },
       { x: 40, y: 888, w: 520, h: 340 },
       { x: 40, y: 1268, w: 520, h: 340 }
-    ]
+    ],
+    drawFooter: (ctx) => {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 32px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MY JOURNEY STRIP', 300, 1720);
+    }
   },
   6: {
     id: 'grid-6',
@@ -32,7 +68,13 @@ const FRAMES_CONFIG = {
       { x: 30, y: 300, w: 560, h: 420 }, { x: 610, y: 300, w: 560, h: 420 },
       { x: 30, y: 750, w: 560, h: 420 }, { x: 610, y: 750, w: 560, h: 420 },
       { x: 30, y: 1200, w: 560, h: 420 }, { x: 610, y: 1200, w: 560, h: 420 }
-    ]
+    ],
+    drawFooter: (ctx) => {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 32px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MY JOURNEY GRID', 600, 180);
+    }
   }
 };
 
@@ -42,7 +84,6 @@ export default function PhotoboothView({ onSave, isSaving }) {
   const [capturedPhotos, setCapturedPhotos] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [tempPhoto, setTempPhoto] = useState(null);
-  const [customFrameSrc, setCustomFrameSrc] = useState(null);
   const [finalResult, setFinalResult] = useState(null);
 
   const videoRef = useRef(null);
@@ -113,18 +154,19 @@ export default function PhotoboothView({ onSave, isSaving }) {
       setCurrentIdx(updatedPhotos.length);
       setStep('camera');
     } else {
-      
-      renderFinalPhotobooth(updatedPhotos);
+      setStep('select-frame');
     }
   };
 
-  const renderFinalPhotobooth = async (photos) => {
-    const config = FRAMES_CONFIG[quantity];
-    if (!config) return;
+  
+
+  const renderFinalPhotobooth = async (frameSrc) => {
+    const layout = FRAMES_LAYOUT_CONFIG[quantity];
+    if (!layout) return;
 
     const canvas = document.createElement('canvas');
-    canvas.width = config.width;
-    canvas.height = config.height;
+    canvas.width = layout.width;
+    canvas.height = layout.height;
     const ctx = canvas.getContext('2d');
 
     const loadImage = (src) => new Promise((resolve) => {
@@ -134,24 +176,22 @@ export default function PhotoboothView({ onSave, isSaving }) {
     });
 
     try {
-      const loadedPhotos = await Promise.all(photos.map(p => loadImage(p)));
+      const loadedPhotos = await Promise.all(capturedPhotos.map(p => loadImage(p)));
       
-      ctx.fillStyle = config.defaultBg;
+      ctx.fillStyle = layout.defaultBg;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      config.slots.forEach((slot, index) => {
+      layout.slots.forEach((slot, index) => {
         if (loadedPhotos[index]) {
           ctx.drawImage(loadedPhotos[index], slot.x, slot.y, slot.w, slot.h);
         }
       });
 
-      if (customFrameSrc) {
-        const customFrameImg = await loadImage(customFrameSrc);
-
-        ctx.drawImage(customFrameImg, 0, 0, canvas.width, canvas.height);
+      if (frameSrc) {
+        const frameImg = await loadImage(frameSrc);
+        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
       } else {
-        
-        config.drawFooter(ctx);
+        layout.drawFooter(ctx);
       }
 
       setFinalResult(canvas.toDataURL('image/jpeg', 0.95));
@@ -188,40 +228,6 @@ export default function PhotoboothView({ onSave, isSaving }) {
             <span className="material-symbols-outlined text-5xl text-primary animate-pulse">auto_awesome_motion</span>
             <h2 className="text-xl font-bold mt-2">Cấu Hình Photobooth</h2>
             <p className="text-zinc-400 text-xs">Hệ thống tự động áp dụng khung theo số ảnh bạn chọn</p>
-          </div>
-
-          <div className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col gap-3">
-            <label className="text-xs font-bold text-zinc-300 flex items-center gap-1.5 uppercase tracking-wide">
-              <span className="material-symbols-outlined text-sm text-cyan-400">upload_file</span> Sử dụng khung tự tải (Tùy chọn):
-            </label>
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => fileInputRef.current.click()}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-xs font-bold rounded-xl transition-transform active:scale-95 cursor-pointer"
-              >
-                {customFrameSrc ? 'Thay đổi khung ảnh' : 'Chọn tệp khung từ máy'}
-              </button>
-              <input 
-                ref={fileInputRef}
-                type="file" 
-                accept="image/*" 
-                className="hidden" 
-                onChange={handleCustomFrameUpload} 
-              />
-              {customFrameSrc && (
-                <button 
-                  onClick={() => setCustomFrameSrc(null)} 
-                  className="material-symbols-outlined text-red-400 hover:text-red-300 transition-colors"
-                >
-                  delete
-                </button>
-              )}
-            </div>
-            {customFrameSrc && (
-              <p className="text-[11px] text-emerald-400 flex items-center gap-1">
-                <span className="material-symbols-outlined text-xs">check_circle</span> Đã kích hoạt khung tùy biến thành công
-              </p>
-            )}
           </div>
 
           <div className="w-full text-left text-xs font-bold text-zinc-500 uppercase tracking-widest pl-1">Chọn số lượng ô ảnh</div>
@@ -287,6 +293,69 @@ export default function PhotoboothView({ onSave, isSaving }) {
         </div>
       )}
 
+      {step === 'select-frame' && (
+        <div className="flex-1 flex flex-col justify-between items-center gap-4 w-full max-w-md h-full overflow-hidden">
+          <div className="text-center shrink-0">
+            <h2 className="text-lg font-bold">Chọn Khung Hình</h2>
+            <p className="text-xs text-zinc-400">Nhấp trực tiếp vào hình để áp dụng vào phim ảnh</p>
+          </div>
+
+          <div className="w-full flex-1 overflow-y-auto no-scrollbar p-2 space-y-4">
+            
+            <div className={`w-full grid gap-4 ${
+              quantity === 1 ? 'grid-cols-1' : 'grid-cols-2'
+            }`}>
+              
+              {BUILTIN_FRAMES[quantity]?.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => renderFinalPhotobooth(template.src)}
+                  className={`group relative w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-2 flex items-center justify-center transition-all hover:border-primary/80 hover:bg-zinc-800/50 active:scale-95 shadow-md cursor-pointer ${
+                    quantity === 4 ? 'aspect-[1/3]' : quantity === 6 ? 'aspect-[2/3]' : 'aspect-[3/2]'
+                  }`}
+                >
+                  <div className="w-full h-full flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={template.src} 
+                      alt="Frame template" 
+                      className="max-w-full max-h-full object-contain rounded transition-transform group-hover:scale-102" 
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none rounded-2xl">
+                    <span className="material-symbols-outlined text-white text-xl bg-primary/90 p-2.5 rounded-full shadow-lg">check</span>
+                  </div>
+                </button>
+              ))}
+
+            <div className="w-full p-4 bg-zinc-900/60 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2">
+              <span className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 uppercase tracking-wider">
+                <span className="material-symbols-outlined text-base text-cyan-400">upload_file</span> Sử dụng khung riêng của bạn
+              </span>
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="text-xs text-zinc-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-zinc-800 file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer max-w-full"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => renderFinalPhotobooth(ev.target.result);
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          <button 
+            onClick={resetAll} 
+            className="text-xs text-zinc-500 hover:text-zinc-300 underline mb-2 shrink-0"
+          >
+            Hủy và chụp lại từ đầu
+          </button>
+        </div></div>
+      )}
+
       {step === 'final' && (
         <div className="flex-1 flex flex-col items-center justify-between w-full max-w-md gap-3 overflow-hidden">
           <h3 className="text-sm font-bold text-emerald-400 flex items-center gap-1 shrink-0">
@@ -304,7 +373,7 @@ export default function PhotoboothView({ onSave, isSaving }) {
           <div className="flex flex-col gap-2 w-full px-1 mt-1 shrink-0">
             <button 
               onClick={downloadImage}
-              className="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white text-xs font-bold rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-md"
+              className="w-full py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white text-xs font-bold rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-md cursor-pointer"
             >
               <span className="material-symbols-outlined text-sm">download</span> Tải ảnh kết quả về máy
             </button>
