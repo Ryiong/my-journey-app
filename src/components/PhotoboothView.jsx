@@ -130,6 +130,24 @@ export default function PhotoboothView({ onSave, isSaving }) {
     }
   };
 
+  const drawImageOnCanvas = (ctx, img, targetX, targetY, targetWidth, targetHeight) => {
+    const imgWidth = img.width;
+    const imgHeight = img.height;
+    const imgAspectRatio = imgWidth / imgHeight;
+    const targetAspectRatio = targetWidth / targetHeight;
+
+    let sourceX = 0, sourceY = 0, sourceWidth = imgWidth, sourceHeight = imgHeight;
+    
+    if (imgAspectRatio > targetAspectRatio) {
+      sourceWidth = imgHeight * targetAspectRatio;
+      sourceX = (imgWidth - sourceWidth) / 2;
+    } else {
+      sourceHeight = imgWidth / targetAspectRatio;
+      sourceY = (imgHeight - sourceHeight) / 2;
+    }
+    ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, targetX, targetY, targetWidth, targetHeight);
+  }
+
   const capturePhoto = () => {
     if (!videoRef.current) return;
     const canvas = document.createElement('canvas');
@@ -183,7 +201,7 @@ export default function PhotoboothView({ onSave, isSaving }) {
 
       layout.slots.forEach((slot, index) => {
         if (loadedPhotos[index]) {
-          ctx.drawImage(loadedPhotos[index], slot.x, slot.y, slot.w, slot.h);
+          drawImageOnCanvas(ctx, loadedPhotos[index], slot.x, slot.y, slot.w, slot.h);
         }
       });
 
